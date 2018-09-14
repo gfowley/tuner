@@ -1,0 +1,11 @@
+.*.swp
+.*.un~
+
+.ruby-version
+.ruby-gemset
+
+node_modules/
+platforms/browser/www/
+platforms/browser/config.xml
+platforms/browser/browser.json
+

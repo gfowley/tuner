@@ -1,0 +1,29 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ast (2.4.0)
+    hike (1.2.3)
+    opal (0.11.0)
+      ast (>= 2.3.0)
+      hike (~> 1.2)
+      parser (= 2.3.3.1)
+      sourcemap (~> 0.1.0)
+    opal-browser (0.2.0)
+      opal
+      paggio
+    paggio (0.2.6)
+    parser (2.3.3.1)
+      ast (~> 2.2)
+    rake (12.3.1)
+    sourcemap (0.1.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  opal (= 0.11.0)
+  opal-browser
+  rake
+
+BUNDLED WITH
+   1.16.2
