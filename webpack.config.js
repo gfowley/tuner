@@ -3,9 +3,9 @@ var path = require("path")
 module.exports = (env,argv) => {
   // console.log(argv)
   return {
-    entry: './app/app.rb',
+    entry: './app/index.rb',
     output: {
-      filename: 'webpack_app_bundle.js',
+      filename: 'index.js',
       path: path.resolve(__dirname, 'www/js'),
     },
     module: {

@@ -4,20 +4,20 @@ Bundler.require
 def opal_build
   Opal.append_path "app"
   Opal.append_path "lib"
-  Opal::Builder.build("app").to_s
+  Opal::Builder.build("index").to_s
 end
 
 namespace :opal do
 
   desc "Remove built files"
   task :clean do
-    FileUtils.rm_f "www/js/opal_app_bundle.js"
+    FileUtils.rm_f "www/js/index.js"
   end
 
-  desc "Opal build to www/js/opal_app_bundle.js"
+  desc "Opal build to www/js/index.js"
   task :build => [ :clean ] do
     FileUtils.mkdir_p 'www/js'
-    File.binwrite "www/js/opal_app_bundle.js", opal_build
+    File.binwrite "www/js/index.js", opal_build
   end
 
   desc "Opal build to stdout - for use by webpack loader"
@@ -32,7 +32,7 @@ namespace :webpack do
 
   desc "Remove built files"
   task :clean do
-    FileUtils.rm_f "www/js/webpack_app_bundle.js"
+    FileUtils.rm_f "www/js/index.js"
   end
 
   desc "build"
