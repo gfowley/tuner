@@ -1,7 +1,8 @@
 require 'opal' 
+require 'opal/version' 
 require 'browser'
 require 'native'
-require 'repl'
+# require 'repl'
 
 puts "Opal #{Opal::VERSION}"
 
