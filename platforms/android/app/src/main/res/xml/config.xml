@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="net.iqeo.CordovaOpalWebpackVueTemplate" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
     <name>net.iqeo.cordova-opal-webpack-vue-template</name>
     <description>Cordova/Opal/Webpack/Vue Template</description>
     <author email="dev@iqeo.net" href="http://iqeo.net">Iqeo</author>
@@ -11,15 +15,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <platform name="android">
-        <allow-intent href="market:*" />
-    </platform>
-    <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-    </platform>
     <hook src="scripts/before_prepare.js" type="before_prepare" />
-    <plugin name="cordova-plugin-whitelist" spec="^1.3.3" />
-    <engine name="browser" spec="^5.0.4" />
-    <engine name="android" spec="^7.1.1" />
+    <allow-intent href="market:*" />
+    <preference name="loglevel" value="DEBUG" />
 </widget>
