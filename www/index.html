@@ -18,7 +18,7 @@
         <title>Cordova/Opal/Webpack/Vue Template</title>
     </head>
     <body>
-      <div class="app">
+      <div id="app">
         <div id="icons">
           <img class="icon" src="img/cordova.png" />
           <img class="icon" src="img/opal.png" />
@@ -27,12 +27,12 @@
         </div>
         <h1>Cordova/Opal/Webpack/Vue Template</h1>
         <div id="deviceready" class="blink">
-            <div class="event listening">Connecting to Device</div>
-            <div class="event received">Device is Ready</div>
+          <div class="event listening" v-bind:class="{ 'make-invisible': deviceready }">Connecting to Device</div>
+          <div class="event received"  v-bind:class="{ 'make-visible':   deviceready }">Device is Ready</div>
         </div>
-        </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" src="js/vue.js"></script>
+      </div>
+      <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="js/vue.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
     </body>
 </html>

@@ -2,15 +2,16 @@ require 'opal'
 require 'opal/version' 
 require 'browser'
 require 'native'
-# require 'repl'
+require 'repl'
 
 puts "Opal #{Opal::VERSION}"
 
 $document.ready do
   puts "ready"
+  create_vue_app
   $document.on( :click       ) { |event| on_event event       }
   $document.on( :deviceready ) { |event| on_deviceready event }
-  # REPL.run
+  REPL.run
 end
 
 def on_event event
@@ -23,10 +24,18 @@ def on_deviceready event
   bind_cordova_events
 end
 
+def create_vue_app
+  config = {
+    el: '#app',
+    data: {
+      deviceready: false
+    }
+  }
+  $vue_app = Native(`new Vue(#{config.to_n})`)
+end
+
 def indicate_deviceready
-  dr_element = $document['deviceready']
-  dr_element.at_css('.listening')['style'] = 'display:none;'
-  dr_element.at_css('.received' )['style'] = 'display:block;'
+  $vue_app.deviceready = true
 end
 
 def bind_cordova_events
