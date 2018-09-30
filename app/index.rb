@@ -2,7 +2,7 @@ require 'opal'
 require 'opal/version' 
 require 'browser'
 require 'native'
-require 'repl'
+# require 'repl'
 
 puts "Opal #{Opal::VERSION}"
 
@@ -11,7 +11,7 @@ $document.ready do
   create_vue_app
   $document.on( :click       ) { |event| on_event event       }
   $document.on( :deviceready ) { |event| on_deviceready event }
-  REPL.run
+  # REPL.run
 end
 
 def on_event event
