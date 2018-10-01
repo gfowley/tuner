@@ -1,8 +1,8 @@
 {
-    "name": "cordova-opal-webpack-template",
-    "displayName": "Cordova/Opal/Webpack Template",
+    "name": "cordova-opal-webpack-vue-template",
+    "displayName": "Cordova/Opal/Webpack/Vue Template",
     "version": "1.0.0",
-    "description": "Cordova/Opal/Webpack Template",
+    "description": "Cordova/Opal/Webpack/Vue Template",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
         "cordova-android": "^7.1.1",
         "cordova-browser": "^5.0.4",
         "cordova-plugin-whitelist": "^1.3.3",
+        "vue": "^2.5.17",
         "webpack": "^4.17.2",
         "webpack-cli": "^3.1.0",
         "webpack-dev-server": "^3.1.8"

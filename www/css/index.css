@@ -42,13 +42,21 @@ h1 {
 }
 
 .event.listening {
-    background-color:#333333;
-    display: inline;
+  background-color:#333333;
+  display: block;
 }
 
 .event.received {
-    background-color:#4B946A;
-    display: none;
+  background-color:#4B946A;
+  display:none;
+}
+
+.event.make-visible {
+  display:block !important;
+}
+
+.event.make-invisible {
+  display:none !important;
 }
 
 @keyframes fade {

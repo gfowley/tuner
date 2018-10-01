@@ -19,7 +19,7 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "net.iqeo.CordovaOpalWebpackTemplate"
+      "PACKAGE_NAME": "net.iqeo.CordovaOpalWebpackVueTemplate"
     }
   },
   "dependent_plugins": {},
