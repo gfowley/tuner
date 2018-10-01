@@ -10,6 +10,6 @@ platforms/browser/config.xml
 platforms/browser/browser.json
 platforms/android/CordovaLib/build/
 platforms/android/app/build/
-platforms/android/app/src/main/assets/
+platforms/android/app/src/
 platforms/android/.gradle/
 
