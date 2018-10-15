@@ -4,6 +4,15 @@ body {
     font-size:12px;
 }
 
+.visible {
+  display:block
+}
+
+.invisible {
+  display:none
+}
+
+
 #icons {
   display: flex;
   flex-direction: row;

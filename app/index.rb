@@ -2,16 +2,13 @@ require 'opal'
 require 'opal/version' 
 require 'browser'
 require 'native'
-# require 'repl'
 
 puts "Opal #{Opal::VERSION}"
 
 $document.ready do
   puts "ready"
-  create_vue_app
   $document.on( :click       ) { |event| on_event event       }
   $document.on( :deviceready ) { |event| on_deviceready event }
-  # REPL.run
 end
 
 def on_event event
@@ -20,22 +17,32 @@ end
 
 def on_deviceready event
   puts 'cordova:deviceready'
+  create_vue_onsen_app
   indicate_deviceready
+  show_app
   bind_cordova_events
 end
 
-def create_vue_app
+def show_app
+  # app element is initially invisible to hide mess until onsen makes it pretty
+  # cordova splashscreen would also work
+  $document['app'].attributes[:class] = "visible"
+end
+
+def create_vue_onsen_app
   config = {
     el: '#app',
     data: {
       deviceready: false
     }
   }
-  $vue_app = Native(`new Vue(#{config.to_n})`)
+  $vue = Native(`new Vue(#{config.to_n})`)
+  $ons = Native(`ons`)
 end
 
 def indicate_deviceready
-  $vue_app.deviceready = true
+  $vue.deviceready = true
+  $ons.notification.toast "Device is Ready...", timeout: 5000
 end
 
 def bind_cordova_events
