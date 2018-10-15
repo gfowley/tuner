@@ -14,8 +14,10 @@
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+        <link rel="stylesheet" type="text/css" href="css/onsen-css-components.css">
+        <link rel="stylesheet" type="text/css" href="css/onsenui.css">
         <link rel="stylesheet" type="text/css" href="css/index.css">
-        <title>Cordova/Opal/Webpack/Vue Template</title>
+        <title>Cordova/Opal/Webpack/Vue/Onsen Template</title>
     </head>
     <body>
       <div id="app">
@@ -24,8 +26,9 @@
           <img class="icon" src="img/opal.png" />
           <img class="icon" src="img/webpack.png" />
           <img class="icon" src="img/vue.png" />
+          <img class="icon" src="img/onsen.png" />
         </div>
-        <h1>Cordova/Opal/Webpack/Vue Template</h1>
+        <h1>Cordova/Opal/Webpack/Vue/Onsen Template</h1>
         <div id="deviceready" class="blink">
           <div class="event listening" v-bind:class="{ 'make-invisible': deviceready }">Connecting to Device</div>
           <div class="event received"  v-bind:class="{ 'make-visible':   deviceready }">Device is Ready</div>
@@ -33,6 +36,8 @@
       </div>
       <script type="text/javascript" src="cordova.js"></script>
       <script type="text/javascript" src="js/vue.js"></script>
+      <script type="text/javascript" src="js/onsenui.js"></script>
+      <script type="text/javascript" src="js/vue-onsenui.js"></script>
       <script type="text/javascript" src="js/index.js"></script>
     </body>
 </html>

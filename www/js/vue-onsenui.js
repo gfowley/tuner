@@ -1,0 +1,1 @@
+../../node_modules/vue-onsenui/dist/vue-onsenui.js
