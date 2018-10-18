@@ -30,19 +30,20 @@ def show_app
 end
 
 def create_vue_onsen_app
-  config = {
-    el: '#app',
-    data: {
-      deviceready: false
-    }
-  }
-  $vue = Native(`new Vue(#{config.to_n})`)
+  # config = {
+  #   el: '#app',
+  #   data: {
+  #     deviceready: false
+  #   }
+  # }
+  # $vue = Native(`new Vue(#{config.to_n})`)
+  $vue = Native(`vue`) # in tuner.js
   $ons = Native(`ons`)
 end
 
 def indicate_deviceready
   $vue.deviceready = true
-  $ons.notification.toast "Device is Ready...", timeout: 5000
+  $ons.notification.toast "Device is Ready...", timeout: 2000
 end
 
 def bind_cordova_events

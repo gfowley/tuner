@@ -1,0 +1,19 @@
+#detector {
+  text-align: center;
+}
+#note-box {
+  height: 50vh; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+#note {
+  font-size: 40vh;
+}
+div.confident {
+  color: black;
+}
+div.vague {
+  color: lightgrey;
+}
+

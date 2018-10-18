@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!--
-        Customize this policy to fit your own app's needs. For more guidance, see:
-            https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-        Some notes:
-            * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
-            * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
-            * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
-                * Enable inline JS: add 'unsafe-inline' to default-src
-        -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
         <meta name="format-detection" content="telephone=no">
         <meta name="msapplication-tap-highlight" content="no">
@@ -18,6 +9,7 @@
         <link rel="stylesheet" type="text/css" href="css/onsen-css-components.css">
         <link rel="stylesheet" type="text/css" href="css/onsenui.css">
         <link rel="stylesheet" type="text/css" href="css/index.css">
+        <link rel="stylesheet" type="text/css" href="css/tuner.css">
 
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/vue.js"></script>
@@ -26,7 +18,7 @@
         <script type="text/javascript" src="js/vue-onsenui.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
 
-        <title>Cordova/Opal/Webpack/Vue/Onsen Template</title>
+        <title>Tuner</title>
     </head>
 
     <body>
@@ -35,25 +27,48 @@
         <v-ons-page>
 
           <v-ons-toolbar>
-            <div class="center">Cordova/Opal/Webpack/Vue/Onsen Template</div>
+            <div class="center">Tuner</div>
           </v-ons-toolbar>
 
-          <v-ons-card>
-            <div id="icons">
-              <img class="icon" src="img/cordova.png" />
-              <img class="icon" src="img/opal.png" />
-              <img class="icon" src="img/webpack.png" />
-              <img class="icon" src="img/vue.png" />
-              <img class="icon" src="img/onsen.png" />
+            <div id="detector" v-bind:class=" pitch == 0 ? 'vague' : 'confident' ">
+              <v-ons-row>
+                <v-ons-col width="100%">
+                  <canvas id="visualizer"></canvas>
+                </v-ons-col>
+              </v-ons-row>
+              <v-ons-row>
+                <v-ons-col width="100%">
+                  <span id="pitch">{{ Math.round(pitch) }}</span> Hz
+                </v-ons-col>
+              </v-ons-row>
+              <v-ons-row>
+                <v-ons-col width="100%" id="note-box">
+                  <span id="note">{{ note }}</span>
+                </v-ons-col>
+              </v-ons-row>
+              <v-ons-row>
+                <v-ons-col width="100%">
+                  <div id="detune">
+                    <span>{{ Math.abs(detune) }} cents </span><span v-if=" detune < 0 ">&#9837;</span><span v-if=" detune > 0 ">&#9839;</span>
+                  </div>
+                </v-ons-col>
+              </v-ons-row>
             </div>
-            <div id="deviceready" class="blink">
-              <div class="event listening" v-bind:class="{ 'make-invisible': deviceready }">Connecting to Device</div>
-              <div class="event received"  v-bind:class="{ 'make-visible':   deviceready }">Device is Ready</div>
-            </div>
-          </v-ons-card>
+            <v-ons-row>
+              <v-ons-fab id="mic"
+                position="bottom center"
+                v-on:click="toggleLiveInput"
+                v-bind:style="isPlaying ? 'background-color:green' : 'background-color:red'">
+                <v-ons-icon 
+                  size="lg"
+                  v-bind:icon="isPlaying ? 'md-mic' : 'md-mic-off'">
+                </v-ons-icon>
+              </v-ons-fab>
+            </v-ons-row>
 
         </v-ons-page>
       </div>
 
+        <script type="text/javascript" src="js/tuner.js"></script>
     </body>
 </html>

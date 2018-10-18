@@ -1,0 +1,32 @@
+#detector {
+  text-align: center;
+}
+
+#visualizer {
+  margin: 1rem;
+}
+
+#note-box {
+  height: 50vh; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#note {
+  font-size: 40vh;
+}
+
+#mic {
+  color:white;
+}
+
+
+div.confident {
+  color: black;
+}
+
+div.vague {
+  color: lightgrey;
+}
+

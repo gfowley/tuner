@@ -1,0 +1,25 @@
+<!-- export default ` -->
+<f7-page>
+  <f7-content-block inset>
+    <div id="detector" v-bind:class=" pitch == 0 ? 'vague' : 'confident' ">
+      <f7-grid>
+        <f7-col width="100">
+          <canvas id="visualizer"></canvas>
+        </f7-col>
+        <f7-col width="100">
+          <span id="pitch">{{ Math.round(pitch) }}</span> Hz
+        </f7-col>
+        <f7-col width="100" id="note-box">
+          <span id="note">{{ note }}</span>
+        </f7-col>
+        <f7-col width="100">
+          <div id="detune">
+            <span>{{ Math.abs(detune) }} cents </span><span v-if=" detune < 0 ">&#9837;</span><span v-if=" detune > 0 ">&#9839;</span>
+          </div>
+        </f7-col>
+      </f7-grid>
+    </div>
+    <f7-button raised v-on:click="toggleLiveInput">{{ isPlaying ? "Stop" : "Start" }}</f7-button>
+  </f7-content-block>
+</f7-page>
+<!-- ` -->
