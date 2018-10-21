@@ -18,7 +18,6 @@ end
 def on_deviceready event
   puts 'cordova:deviceready'
   create_vue_onsen_app
-  indicate_deviceready
   show_app
   bind_cordova_events
 end
@@ -39,11 +38,6 @@ def create_vue_onsen_app
   # $vue = Native(`new Vue(#{config.to_n})`)
   $vue = Native(`vue`) # in tuner.js
   $ons = Native(`ons`)
-end
-
-def indicate_deviceready
-  $vue.deviceready = true
-  $ons.notification.toast "Device is Ready...", timeout: 2000
 end
 
 def bind_cordova_events
