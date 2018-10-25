@@ -1,31 +1,70 @@
+require 'native'
 
 class Vue
 
-  attr_accessor :vue
+  include Native
 
+  attr_accessor :native
+  
   def initialize element
-    config = {
-      el: element,
-      data: {
-      }
+    @config = {
+      el:           element,
+      data:         self.class.data,
+      methods:      methods_hash( self.class.methods  ),
+      computed:     methods_hash( self.class.computed ),
+      mounted:      method(:mounted).to_proc,
+      beforeCreate: `function() { #{@vue} = this }`,
+      created:      method(:created).to_proc
     }
-    @vue = Native(`new Vue(#{config.to_n})`)
+    Native(`new Vue(#{@config.to_n})`)
   end
 
-  def self.methods *method_syms
-
+  def created
+    @native = Native(`#{@vue}`)
   end
 
-  def self.computed *method_syms
-
+  def self.data pairs=nil
+    return @vue_data if pairs.nil?
+    @vue_data = pairs
+    pairs.each { |name,_| my_native_accessor name }
   end
 
-  def data
-    raise NotImplementedError
+  def self.my_native_accessor name
+    my_native_reader name
+    my_native_writer name
+  end
+
+  def self.my_native_reader name
+    define_method name do
+      @native[name]
+    end
+  end
+
+  def self.my_native_writer name
+    define_method name+'=' do |arg|
+      @native[name] = arg
+    end
+  end
+
+  def self.methods *names
+    return @vue_methods if names.empty?
+    @vue_methods = names
+  end
+
+  def self.computed *names
+    return @vue_computed if names.empty?
+    @vue_computed = names
+  end
+
+  def methods_hash names
+    names.inject({}) do |mh,name|
+      mh[name] = method(name).to_proc
+      mh
+    end
   end
 
   def mounted
-    raise NotImplementedError
+    # provided by subclass
   end
 
 end

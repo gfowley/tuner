@@ -6,7 +6,7 @@ class REPL
   def self.run *args
     REPL.start *args
     REPL.open
-    @singelton
+    @singleton
   end
 
   def self.start context         = "main",
@@ -85,6 +85,7 @@ class REPL
     width: 100%;
     position: fixed;
     bottom: 0;
+    z-index: 999;
   }
   #repl-button {
     margin: 0.5rem; 
