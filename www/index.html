@@ -57,11 +57,11 @@
             <v-ons-row>
               <v-ons-fab id="mic"
                 position="bottom center"
-                v-on:click="toggle_playing"
-                v-bind:style="isPlaying ? 'background-color:green' : 'background-color:red'">
+                v-on:click="toggle_listening"
+                v-bind:style="listening ? 'background-color:red' : 'background-color:green'">
                 <v-ons-icon 
                   size="lg"
-                  v-bind:icon="isPlaying ? 'md-mic' : 'md-mic-off'">
+                  v-bind:icon="listening ? 'md-mic' : 'md-mic-off'">
                 </v-ons-icon>
               </v-ons-fab>
             </v-ons-row>

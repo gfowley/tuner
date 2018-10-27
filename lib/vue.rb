@@ -16,7 +16,7 @@ class Vue
       beforeCreate: `function() { #{@vue} = this }`,
       created:      method(:created).to_proc
     }
-    Native(`new Vue(#{@config.to_n})`)
+    Native(`tuner = new Vue(#{@config.to_n})`)
   end
 
   def created

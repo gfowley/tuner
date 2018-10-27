@@ -4,7 +4,7 @@ class Tuner < Vue
 
   NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
-  methods :toggle_playing
+  methods :toggle_listening
   # :toggleLiveInput
   # :call_with_permission,
   # :permission_refused,
@@ -20,7 +20,7 @@ class Tuner < Vue
 
   computed :note
 
-  data isPlaying:   false,
+  data listening:   false,
        pitch:       0,
        detune:      0,
        note_number: 0
@@ -29,8 +29,48 @@ class Tuner < Vue
     pitch == 0 ? '--' : NOTES[note_number%12];
   end
 
-  def toggle_playing
-    isPlaying = ! isPlaying 
+  def toggle_listening
+    if listening
+      # audio_context.close
+      self.listening = false
+      return
+    end
+    start_listening
+  end
+
+  def start_listening
+    permissions = [
+      $$.cordova.plugins.permissions.MODIFY_AUDIO_SETTINGS,
+      $$.cordova.plugins.permissions.RECORD_AUDIO
+    ]
+    $$.cordova.plugins.permissions.requestPermissions(
+      permissions, 
+      proc do |status|
+        if Native(`status`).hasPermission 
+          permission_granted
+        else
+          permission_refused
+        end 
+      end,
+      proc do
+        permission_error
+      end
+    )
+  end
+
+  def permission_granted
+    puts "Permission granted"
+    self.listening = true
+  end
+
+  def permission_refused
+    puts "Permission refused"
+    alert( 'Cannot access microphone without permission. Please grant permission.' )
+  end
+
+  def permission_error
+    puts "Error requesting permission"
+    alert( 'Error getting permssion. Try setting permissions, or reinstall app.' )
   end
 
   # def toggleLiveInput e 
