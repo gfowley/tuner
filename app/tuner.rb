@@ -5,18 +5,6 @@ class Tuner < Vue
   NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
   methods :toggle_listening
-  # :toggleLiveInput
-  # :call_with_permission,
-  # :permission_refused,
-  # :permission_error,
-  # :getUserMedia,
-  # :gotStream,
-  # :updatePitch,
-  # :visualize,
-  # :autoCorrelate,
-  # :noteFromPitch,
-  # :frequencyFromNoteNumber,
-  # :centsOffFromPitch
 
   computed :note
 
@@ -31,7 +19,9 @@ class Tuner < Vue
 
   def toggle_listening
     if listening
-      # audio_context.close
+      # JS: window.cancelAnimationFrame( this.note_af )
+      # JS: window.cancelAnimationFrame( this.visual_af )
+      @audio_context.close
       self.listening = false
       return
     end
@@ -60,7 +50,7 @@ class Tuner < Vue
 
   def permission_granted
     puts "Permission granted"
-    self.listening = true
+    get_user_media
   end
 
   def permission_refused
@@ -73,101 +63,63 @@ class Tuner < Vue
     alert( 'Error getting permssion. Try setting permissions, or reinstall app.' )
   end
 
-  # def toggleLiveInput e 
-  #   %x{
-  #     if (this.isPlaying) {
-  #       // if (!window.cancelAnimationFrame) {
-  #       //  window.cancelAnimationFrame = window.webkitCancelAnimationFrame;
-  #       //}
-  #       window.cancelAnimationFrame( this.note_af )
-  #       window.cancelAnimationFrame( this.visual_af )
-  #       this.audioContext.close()
-  #       this.isPlaying = false
-  #       return;
-  #     }
-  #     var permission_list = [
-  #       cordova.plugins.permissions.MODIFY_AUDIO_SETTINGS,
-  #       cordova.plugins.permissions.RECORD_AUDIO
-  #     ]
-  #     this.call_with_permission( permission_list, this.getUserMedia, this.permission_refused, this.permission_error );
-  #   }
-  # end
+  def get_user_media
+    puts "Tuner#get_user_media"
+    options = { audio: true } # { autoGainControl: false, noiseSuppression: false, echoCancellation: false }
+    # TODO: make this browser portable (may not work on Android!)
+    # JS: navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+    $$.navigator.mozGetUserMedia( options, method(:got_stream).to_proc ) do
+      alert('Unable to access microphone.')
+    end
+  end
 
-  # def call_with_permission permission_list, granted_callback, refused_callback, error_callback  
-  #   %x{
-  #   cordova.plugins.permissions.requestPermissions( permission_list,
-  #     function( status ) {
-  #       if ( status.hasPermission ) {
-  #         // console.log("Permission granted")
-  #         granted_callback()
-  #       } else {
-  #         // console.warn("Permission refused")
-  #         refused_callback()
-  #       }
-  #     },
-  #     function() {
-  #       // console.error("Error requesting permission")
-  #       error_callback()
-  #     }
-  #   )
-  #   }
-  # end
-        
-  # def permission_refused 
-  #   %x{
-  #   alert( 'Cannot access microphone without permission. Please grant permission.' )
-  #   }
-  # end
+  def got_stream stream
+    puts "Tuner#got_stream"
+    @audio_context = Native `new AudioContext()`
+    @analyser = @audio_context.createAnalyser
+    @analyser.fftSize = 2048
+    # filter above highest guitar note E(6) is 1318.51Hz, A(7) is 1760Hz
+    filter = @audio_context.createBiquadFilter
+    filter.type = "lowpass"
+    filter.frequency.value = 1760
+    filter.connect @analyser 
+    media_stream_source = @audio_context.createMediaStreamSource stream
+    media_stream_source.connect filter 
+    @buffer = `new Float32Array( 1024 )`
+    self.listening = true
+    update_pitch
+    # JS: this.visualize();
+  end
 
-  # def permission_error
-  #   %x{
-  #   alert( 'Error getting permssion. Try setting permissions, or reinstall app.' )
-  #   }
-  # end
-  
-  # def getUserMedia
-  #   %x{
-  #   var options = { audio: true } // { autoGainControl: false, noiseSuppression: false, echoCancellation: false }
-  #   navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-  #   navigator.getUserMedia( options, this.gotStream, function() { alert('Unable to access microphone.') } )
-  #   }
-  # end
+  def update_pitch
+    puts "Tuner#update_pitch"
+    @analyser.getFloatTimeDomainData @buffer
+    ac = auto_correlate @buffer, @audio_context.sampleRate
+    if ac == -1 
+      self.pitch  = 0
+      self.detune = 0
+    else 
+      self.pitch       = ac
+      self.note_number = note_number_from_pitch pitch
+      self.detune      = detune_from_pitch pitch
+    end
+    # JS: this.note_af = window.requestAnimationFrame( this.updatePitch );
+  end
 
-  # def gotStream stream 
-  #   %x{
-  #   window.AudioContext = window.AudioContext || window.webkitAudioContext;
-  #   this.audioContext = new AudioContext();
-  #   this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
-  #   // filter above highest guitar note E(6) is 1318.51Hz, A(7) is 1760Hz
-  #   var filter = this.audioContext.createBiquadFilter();
-  #   filter.type = "lowpass";
-  #   filter.frequency.value = 1760; // high A
-  #   this.analyser = this.audioContext.createAnalyser();
-  #   this.analyser.fftSize = 2048;
-  #   this.mediaStreamSource.connect( filter );
-  #   filter.connect( this.analyser );
-  #   this.isPlaying = true;
-  #   this.updatePitch();
-  #   this.visualize();
-  #   }
-  # end
-  
-  # def updatePitch
-  #   %x{
-  #   this.analyser.getFloatTimeDomainData( this.buf );
-  #   var ac = this.autoCorrelate( this.buf, this.audioContext.sampleRate );
-  #   if (ac == -1) {
-  #     this.pitch  = 0;
-  #     this.detune = 0;
-  #   } else {
-  #     this.pitch       = ac;
-  #     this.note_number = this.noteFromPitch( this.pitch );
-  #     this.detune      = this.centsOffFromPitch( this.pitch, this.note_number );
-  #   }
-  #   this.note_af = window.requestAnimationFrame( this.updatePitch );
-  #   return this.pitch;
-  #   }
-  # end
+  def auto_correlate buffer, rate
+    puts "Tuner#auto_correlate"
+    1234
+  end
+
+  def note_number_from_pitch frequency 
+    puts "Tuner#note_number_from_pitch"
+    ( 12 * Math.log( frequency / 440.0 ) / Math.log(2) ).round + 69
+  end
+
+  def detune_from_pitch frequency
+    puts "Tuner#detune_from_pitch"
+    ( 1200 * Math.log( frequency / ( 440 * ( 2 ** ((note_number-69)/12) ) ) ) / Math.log(2) ).floor
+  end
 
   # def visualize
   #   %x{
