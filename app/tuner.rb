@@ -1,8 +1,10 @@
 require 'vue'
+require 'browser/interval'
 
 class Tuner < Vue
 
   NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+  INTERVAL = 0.1
 
   methods :toggle_listening
 
@@ -19,8 +21,7 @@ class Tuner < Vue
 
   def toggle_listening
     if listening
-      # JS: window.cancelAnimationFrame( this.note_af )
-      # JS: window.cancelAnimationFrame( this.visual_af )
+      @pitch_loop.abort
       @audio_context.close
       self.listening = false
       return
@@ -87,8 +88,9 @@ class Tuner < Vue
     media_stream_source.connect filter 
     @buffer = `new Float32Array( 1024 )`
     self.listening = true
-    update_pitch
-    # JS: this.visualize();
+    @pitch_loop = every(INTERVAL) do
+      update_pitch
+    end
   end
 
   def update_pitch
@@ -103,12 +105,13 @@ class Tuner < Vue
       self.note_number = note_number_from_pitch pitch
       self.detune      = detune_from_pitch pitch
     end
-    # JS: this.note_af = window.requestAnimationFrame( this.updatePitch );
   end
 
+  FAKE_PITCH = 1234
   def auto_correlate buffer, rate
     puts "Tuner#auto_correlate"
-    1234
+    @current_pitch ||= FAKE_PITCH
+    @current_pitch = @current_pitch * 1.005
   end
 
   def note_number_from_pitch frequency 
@@ -121,138 +124,5 @@ class Tuner < Vue
     ( 1200 * Math.log( frequency / ( 440 * ( 2 ** ((note_number-69)/12) ) ) ) / Math.log(2) ).floor
   end
 
-  # def visualize
-  #   %x{
-  #   var buffer_divisor = 8;
-  #   var canvas = document.getElementById('visualizer');
-  #   var canvasCtx = canvas.getContext("2d");
-  #   var bufferLength = this.analyser.frequencyBinCount / buffer_divisor;
-  #   var analyser = this.analyser;
-  #   var vc = this;
-  #   var sampleRate = this.audioContext.sampleRate;
-  #   var dataArray = new Uint8Array(bufferLength);
-  #   canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-  #   var draw = function() {
-  #     vc.visual_af = requestAnimationFrame(draw);
-  #     canvasCtx.fillStyle = 'rgb(0,0,0)';
-  #     canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-  #     canvasCtx.lineWidth = 1;
-  #     // draw grid
-  #     canvasCtx.font = '1rem sans-serif'
-  #     canvasCtx.textBaseline = 'top'
-  #     canvasCtx.fillStyle = 'rgb(255,128,128)'
-  #     canvasCtx.strokeStyle = 'rgb(255,128,128)'
-  #     var x = 0
-  #     var y = 0
-  #     var freq = 55 // A(1)
-  #     var freq_limit = sampleRate / 2 / buffer_divisor
-  #     var sliceWidth = canvas.width * 1.0 / bufferLength;
-  #     var height_factor = canvas.height/256.0;
-  #     while( freq <= freq_limit ) {
-  #       x = canvas.width * ( freq / freq_limit )
-  #       canvasCtx.beginPath()
-  #       canvasCtx.moveTo( x, 0 )
-  #       canvasCtx.lineTo( x, canvas.height )
-  #       canvasCtx.stroke();
-  #       canvasCtx.fillText( freq, x + 2, 2 )
-  #       freq = freq * 2
-  #     }
-  #     // draw rms level
-  #     // canvasCtx.strokeStyle = 'rgb(128,128,255)'
-  #     // var rms_line = canvas.height - ( vc.rms * height_factor )
-  #     // console.log("RMS line: " + rms_line)
-  #     // canvasCtx.beginPath()
-  #     // canvasCtx.moveTo( 0, rms_line ) 
-  #     // canvasCtx.lineTo( canvas.width, rms_line )
-  #     // canvasCtx.stroke();
-  #     // draw frequency spectrum
-  #     analyser.getByteFrequencyData(dataArray);
-  #     canvasCtx.strokeStyle = 'rgb(255,255,128)';
-  #     canvasCtx.beginPath();
-  #     x = 0;
-  #     canvasCtx.moveTo( x, canvas.height - ( dataArray[0] * height_factor ) );
-  #     for(var i = 1; i < bufferLength; i++) {
-  #       y = dataArray[i] * height_factor 
-  #       canvasCtx.lineTo(x, canvas.height - y);
-  #       x += sliceWidth;
-  #     }
-  #     canvasCtx.stroke();
-  #     // draw detected pitch
-  #     canvasCtx.textBaseline = 'bottom'
-  #     canvasCtx.fillStyle = 'rgb(64,255,64)'
-  #     canvasCtx.strokeStyle = 'rgb(64,255,64)';
-  #     x = canvas.width * ( vc.pitch / freq_limit )
-  #     canvasCtx.beginPath()
-  #     canvasCtx.moveTo( x, 0 )
-  #     canvasCtx.lineTo( x, canvas.height )
-  #     canvasCtx.stroke()
-  #     canvasCtx.fillText( vc.pitch.toFixed(2), x + 2, canvas.height - 2 )
-  #   };
-  #   draw();
-  #   }
-  # end
-      
-  # def autoCorrelate buf, sampleRate 
-  #   %x{
-  #   var SIZE = buf.length / 2;
-  #   var MAX_SAMPLES = Math.floor(SIZE/2);
-  #   var best_offset = -1;
-  #   var best_correlation = 0;
-  #   var foundGoodCorrelation = false;
-  #   var correlations = new Array(MAX_SAMPLES);
-  #   var sum = 0;
-  #   for (var i=0;i<SIZE;i++) {
-  #     sum += buf[i] * buf[i];
-  #   }
-  #   this.rms = Math.sqrt(sum/SIZE);
-  #   // console.log("RMS: "+this.rms);
-  #   var lastCorrelation=1;
-  #   for (var offset = this.MIN_SAMPLES; offset < MAX_SAMPLES; offset++) {
-  #     var correlation = 0;
-  #     for (var i=0; i<MAX_SAMPLES; i++) {
-  #       correlation += Math.abs((buf[i])-(buf[i+offset]));
-  #     }
-  #     correlation = 1 - (correlation/MAX_SAMPLES);
-  #     correlations[offset] = correlation; // store it, for the tweaking we need to do below.
-  #     if ((correlation>this.GOOD_ENOUGH_CORRELATION) && (correlation > lastCorrelation)) {
-  #       foundGoodCorrelation = true;
-  #       if (correlation > best_correlation) {
-  #         best_correlation = correlation;
-  #         best_offset = offset;
-  #       }
-  #     } else if (foundGoodCorrelation) {
-  #       var shift = (correlations[best_offset+1] - correlations[best_offset-1])/correlations[best_offset];  
-  #       return sampleRate/(best_offset+(8*shift));
-  #     }
-  #     lastCorrelation = correlation;
-  #   }
-  #   if (best_correlation > 0.01) {
-  #     return sampleRate/best_offset;
-  #   }
-  #   return -1;
-  #   }
-  # end
-
-  # def noteFromPitch frequency 
-  #   %x{
-  #   var noteNum = 12 * (Math.log( frequency / 440 )/Math.log(2) );
-  #   return Math.round( noteNum ) + 69;
-  #   }
-  # end
-  
-  # def frequencyFromNoteNumber note 
-  #   %x{
-  #   return 440 * Math.pow(2,(note-69)/12);
-  #   }
-  # end
-
-  # def centsOffFromPitch frequency, note 
-  #   %x{
-  #   return Math.floor( 1200 * Math.log( frequency / this.frequencyFromNoteNumber( note ))/Math.log(2) );
-  #   }
-  # end
-  
 end
-
-
 

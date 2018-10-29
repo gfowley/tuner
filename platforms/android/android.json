@@ -24,11 +24,11 @@
           "/*": [
             {
               "xml": "<uses-permission android:name=\"android.permission.MODIFY_AUDIO_SETTINGS\" />",
-              "count": 20
+              "count": 21
             },
             {
               "xml": "<uses-permission android:name=\"android.permission.RECORD_AUDIO\" />",
-              "count": 20
+              "count": 21
             }
           ]
         }

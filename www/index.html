@@ -30,12 +30,7 @@
             <div class="center">Tuner</div>
           </v-ons-toolbar>
 
-            <div id="detector" v-bind:class=" pitch == 0 ? 'vague' : 'confident' ">
-              <v-ons-row>
-                <v-ons-col width="100%">
-                  <canvas id="visualizer"></canvas>
-                </v-ons-col>
-              </v-ons-row>
+            <div id="detector" v-bind:class="( !listening || pitch == 0 ) ? 'vague' : 'confident' ">
               <v-ons-row>
                 <v-ons-col width="100%">
                   <span id="pitch">{{ Math.round(pitch) }}</span> Hz
@@ -49,7 +44,7 @@
               <v-ons-row>
                 <v-ons-col width="100%">
                   <div id="detune">
-                    <span>{{ Math.abs(detune) }} cents </span><span v-if=" detune < 0 ">&#9837;</span><span v-if=" detune > 0 ">&#9839;</span>
+                    <span>{{ Math.abs(detune) }} cents </span><span v-if="detune < 0">&#9837;</span><span v-if="detune > 0">&#9839;</span>
                   </div>
                 </v-ons-col>
               </v-ons-row>
@@ -58,7 +53,7 @@
               <v-ons-fab id="mic"
                 position="bottom center"
                 v-on:click="toggle_listening"
-                v-bind:style="listening ? 'background-color:red' : 'background-color:green'">
+                v-bind:style="listening ? 'background-color:red' : 'background-color:red'">
                 <v-ons-icon 
                   size="lg"
                   v-bind:icon="listening ? 'md-mic' : 'md-mic-off'">
