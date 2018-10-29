@@ -66,10 +66,9 @@ class Tuner < Vue
 
   def get_user_media
     puts "Tuner#get_user_media"
-    options = { audio: true } # { autoGainControl: false, noiseSuppression: false, echoCancellation: false }
-    # TODO: make this browser portable (may not work on Android!)
-    # JS: navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
-    $$.navigator.mozGetUserMedia( options, method(:got_stream).to_proc ) do
+    $$.navigator.mediaDevices.getUserMedia( { audio: true } ).then do |stream|
+      got_stream stream
+    end.fail do
       alert('Unable to access microphone.')
     end
   end
