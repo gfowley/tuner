@@ -30,7 +30,7 @@
             <div class="center">Tuner</div>
           </v-ons-toolbar>
 
-            <div id="detector" v-bind:class="( !listening || pitch == 0 ) ? 'vague' : 'confident' ">
+            <div id="detector" v-bind:class="( !listening || pitch == 0 ) ? 'unknown' : 'known' ">
               <v-ons-row>
                 <v-ons-col width="100%">
                   <span id="pitch">{{ Math.round(pitch) }}</span> Hz
@@ -38,13 +38,13 @@
               </v-ons-row>
               <v-ons-row>
                 <v-ons-col width="100%" id="note-box">
-                  <span id="note">{{ note }}</span>
+                  <span id="note">{{ pitch == 0 ? "--" : note }}</span>
                 </v-ons-col>
               </v-ons-row>
               <v-ons-row>
                 <v-ons-col width="100%">
-                  <div id="detune">
-                    <span>{{ Math.abs(detune) }} cents </span><span v-if="detune < 0">&#9837;</span><span v-if="detune > 0">&#9839;</span>
+                  <div id="cents">
+                    <span>{{ Math.abs(cents) }} cents </span><span v-if="cents < 0">&#9837;</span><span v-if="cents > 0">&#9839;</span>
                   </div>
                 </v-ons-col>
               </v-ons-row>
@@ -64,6 +64,5 @@
         </v-ons-page>
       </div>
 
-      <!-- <script type="text/javascript" src="js/tuner.js"></script> -->
     </body>
 </html>

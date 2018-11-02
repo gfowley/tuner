@@ -1,23 +1,17 @@
 require 'vue'
 require 'browser/interval'
+require 'pitch'
 
 class Tuner < Vue
 
-  NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
   INTERVAL = 0.1
 
   methods :toggle_listening
 
-  computed :note
-
-  data listening:   false,
-       pitch:       0,
-       detune:      0,
-       note_number: 0
-
-  def note
-    pitch == 0 ? '--' : NOTES[note_number%12];
-  end
+  data listening: false,
+       pitch:     0,
+       cents:     0,
+       note:      ""
 
   def toggle_listening
     if listening
@@ -85,7 +79,7 @@ class Tuner < Vue
     filter.connect @analyser 
     media_stream_source = @audio_context.createMediaStreamSource stream
     media_stream_source.connect filter 
-    @buffer = `new Float32Array( 1024 )`
+    @float32array = `new Float32Array( 1024 )` 
     self.listening = true
     @pitch_loop = every(INTERVAL) do
       update_pitch
@@ -94,33 +88,15 @@ class Tuner < Vue
 
   def update_pitch
     puts "Tuner#update_pitch"
-    @analyser.getFloatTimeDomainData @buffer
-    ac = auto_correlate @buffer, @audio_context.sampleRate
-    if ac == -1 
-      self.pitch  = 0
-      self.detune = 0
-    else 
-      self.pitch       = ac
-      self.note_number = note_number_from_pitch pitch
-      self.detune      = detune_from_pitch pitch
+    @analyser.getFloatTimeDomainData @float32array
+    @buffer = Array( @float32array )
+    detected_freq = Pitch::Detector.detect3 @buffer, rate: @audio_context.sampleRate
+    self.pitch = detected_freq
+    unless detected_freq == 0
+      detected_note = Pitch.note detected_freq
+      self.note  = detected_note.name
+      self.cents = detected_note.cents
     end
-  end
-
-  FAKE_PITCH = 1234
-  def auto_correlate buffer, rate
-    puts "Tuner#auto_correlate"
-    @current_pitch ||= FAKE_PITCH
-    @current_pitch = @current_pitch * 1.005
-  end
-
-  def note_number_from_pitch frequency 
-    puts "Tuner#note_number_from_pitch"
-    ( 12 * Math.log( frequency / 440.0 ) / Math.log(2) ).round + 69
-  end
-
-  def detune_from_pitch frequency
-    puts "Tuner#detune_from_pitch"
-    ( 1200 * Math.log( frequency / ( 440 * ( 2 ** ((note_number-69)/12) ) ) ) / Math.log(2) ).floor
   end
 
 end

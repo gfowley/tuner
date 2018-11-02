@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/gfowley/pitch.git
+  revision: f71412355aab9d9eda0d7ce781644b63b859f65c
+  specs:
+    pitch (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -23,6 +29,7 @@ PLATFORMS
 DEPENDENCIES
   opal (= 0.11.3)
   opal-browser
+  pitch!
   rake
 
 BUNDLED WITH

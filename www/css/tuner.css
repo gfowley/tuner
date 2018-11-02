@@ -22,11 +22,11 @@
 }
 
 
-div.confident {
+div.known {
   color: black;
 }
 
-div.vague {
+div.unknown {
   color: lightgrey;
 }
 

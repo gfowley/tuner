@@ -57,6 +57,7 @@ class Vue
   end
 
   def methods_hash names
+    return {} if names.nil?
     names.inject({}) do |mh,name|
       mh[name] = method(name).to_proc
       mh

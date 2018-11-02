@@ -2,6 +2,7 @@ require "bundler"
 Bundler.require
 
 def opal_build
+  Opal.use_gem 'pitch'
   Opal.append_path "app"
   Opal.append_path "lib"
   Opal::Builder.build("index").to_s
