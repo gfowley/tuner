@@ -2,9 +2,28 @@ require 'vue'
 require 'browser/interval'
 require 'pitch'
 
+# TODO: app name
+# TODO: app icon
+# TODO: visual changes in index.html
+
+# TODO: prevent spurious note changes - wait for same in a row to change note ? give up if erratic ?
+# TODO: sensitivity level - manual, and auto ?  average RMS of signal ?
+
 class Tuner < Vue
 
   INTERVAL = 0.1
+  SAMPLES  = 4096
+  # SAMPLE_RATE = 44100 ?
+
+  # Strong harmonics of low guitar strings are drowning out root note and causing detection of harmonic note instead of root note. 
+  # Even harmonics are same note in higher octave - this kind of okay for a simple tuner (right note, wrong octave)
+  # Odd harmonics are different note in higher octave - this is bad! A=110Hz*3=330Hz=E  E=82Hz*3=246Hz=B
+  # Attempting to amplify low notes and attenuate high notes...
+  # Lowpass filter (biquad)...
+  # Cutoff down to 110Hz good for A=110Hz string, still unstable for E=82Hz string, good for E=330Hz string, lost response for A=440Hz
+  # Cutoff down to 82Hz good for all strings, lost response for A=440Hz
+  # Other filter response curves with more gradual fall off to preserve A=440Hz response ?
+  LOWPASS_FILTER_CUTOFF = 82
 
   methods :toggle_listening
 
@@ -71,15 +90,14 @@ class Tuner < Vue
     puts "Tuner#got_stream"
     @audio_context = Native `new AudioContext()`
     @analyser = @audio_context.createAnalyser
-    @analyser.fftSize = 2048
-    # filter above highest guitar note E(6) is 1318.51Hz, A(7) is 1760Hz
+    @analyser.fftSize = SAMPLES * 2
     filter = @audio_context.createBiquadFilter
     filter.type = "lowpass"
-    filter.frequency.value = 1760
+    filter.frequency.value = LOWPASS_FILTER_CUTOFF
     filter.connect @analyser 
     media_stream_source = @audio_context.createMediaStreamSource stream
     media_stream_source.connect filter 
-    @float32array = `new Float32Array( 1024 )` 
+    @float32array = `new Float32Array( #{SAMPLES} )` 
     self.listening = true
     @pitch_loop = every(INTERVAL) do
       update_pitch

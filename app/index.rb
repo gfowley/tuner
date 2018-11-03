@@ -19,7 +19,7 @@ end
 def on_deviceready event
   puts 'cordova:deviceready'
   create_tuner
-  REPL.run
+  # REPL.run
   show_app
   bind_cordova_events
 end

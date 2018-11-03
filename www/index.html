@@ -23,6 +23,17 @@
 
     <body>
 
+      <!--
+      TODO: center mic icon in fab
+      TODO: smaller note font - A# is too wide to fit on phone screen
+      TODO: larger font for pitch and cents
+      TODO: pitch top margin
+      TODO: color note for detune red:yellow:green ? +blue ?
+      TODO: breakpoints for detune note color
+      TODO: detune visual scale indicator - needle ?
+      TODO: detune lock-in when close enough ?
+      -->
+
       <div id="app" class="invisible">
         <v-ons-page>
 
@@ -54,10 +65,7 @@
                 position="bottom center"
                 v-on:click="toggle_listening"
                 v-bind:style="listening ? 'background-color:red' : 'background-color:green'">
-                <v-ons-icon 
-                  size="lg"
-                  v-bind:icon="listening ? 'md-mic' : 'md-mic-off'">
-                </v-ons-icon>
+                <v-ons-icon v-bind:icon="listening ? 'md-mic' : 'md-mic-off'"></v-ons-icon>
               </v-ons-fab>
             </v-ons-row>
 
