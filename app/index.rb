@@ -8,12 +8,7 @@ require 'tuner'
 puts "Opal #{Opal::VERSION}"
 
 $document.ready do
-  puts "ready"
   $document.on( :deviceready ) { |event| on_deviceready event }
-end
-
-def on_event event
-  puts event.name
 end
 
 def on_deviceready event

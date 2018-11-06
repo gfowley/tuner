@@ -67,22 +67,18 @@ class Tuner < Vue
   end
 
   def permission_granted
-    puts "Permission granted"
     get_user_media
   end
 
   def permission_refused
-    puts "Permission refused"
     alert( 'Cannot access microphone without permission. Please grant permission.' )
   end
 
   def permission_error
-    puts "Error requesting permission"
     alert( 'Error getting permssion. Try setting permissions, or reinstall app.' )
   end
 
   def get_user_media
-    puts "Tuner#get_user_media"
     $$.navigator.mediaDevices.getUserMedia( { audio: true } ).then do |stream|
       got_stream stream
     end.fail do
@@ -91,7 +87,6 @@ class Tuner < Vue
   end
 
   def got_stream stream
-    puts "Tuner#got_stream"
     @audio_context = Native `new AudioContext()`
 
     @media_stream_source = create_stream_source stream
@@ -133,7 +128,6 @@ class Tuner < Vue
   end
 
   def update_pitch
-    # puts "Tuner#update_pitch"
     @float32array ||= `new Float32Array( #{SAMPLES} )` 
     @analyser.getFloatTimeDomainData @float32array
     @buffer = Array( @float32array )
