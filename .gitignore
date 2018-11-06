@@ -5,11 +5,13 @@
 .ruby-gemset
 
 node_modules/
-platforms/browser/www/
-platforms/browser/config.xml
-platforms/browser/browser.json
+platforms/android/.gradle/
+platforms/android/android.json
 platforms/android/CordovaLib/build/
 platforms/android/app/build/
 platforms/android/app/src/
-platforms/android/.gradle/
+platforms/browser/browser.json
+platforms/browser/config.xml
+platforms/browser/www/
+www/js/index.js
 
