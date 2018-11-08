@@ -1,6 +1,6 @@
-require 'vue'
 require 'browser/interval'
 require 'pitch'
+require 'vue_app'
 
 # TODO: app name
 # TODO: app icon
@@ -133,32 +133,4 @@ class Tuner
   end
 
 end
-
-class VueApp < Vue
-
-  methods :toggle_listening
-
-  data listening: false,
-       pitch:     0,
-       cents:     0,
-       note:      ""
-
-  # TODO: inject tuner dependency instead of global $tuner
-  def toggle_listening
-    listening ? $tuner.stop_listening : $tuner.start_listening
-  end
-
-end
-
-# class VueComponentNote < VueComponent
-
-# end
-
-# class VueComponentFreqGraph < VueComponent
-
-# end
-
-# class VueComponentTimeGraph < VueComponent
-
-# end
 

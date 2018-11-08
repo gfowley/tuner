@@ -1,7 +1,7 @@
 require 'native'
 
-#TODO: watchers and other method types
-#TODO: component
+# TODO: watchers and other method types
+# TODO: component
 
 class Vue
 
