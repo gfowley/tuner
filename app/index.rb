@@ -20,7 +20,7 @@ def on_deviceready event
 end
 
 def create_tuner
-  $tuner = Tuner.new '#app'
+  $tuner = Tuner.new 
 end
 
 def show_app

@@ -8,10 +8,9 @@ require 'pitch'
 
 # TODO: prevent spurious note changes - wait for same in a row to change note ? give up if erratic ?
 # TODO: sensitivity level - manual, and auto ?  average RMS of signal ?
-
 # TODO: pitch mode, mean, median in detector ?
 
-class Tuner < Vue
+class Tuner
 
   INTERVAL = 0.1
   SAMPLES  = 4096
@@ -25,25 +24,18 @@ class Tuner < Vue
   # Cutoff down to 110Hz good for A=110Hz string, still unstable for E=82Hz string, good for E=330Hz string, lost response for A=440Hz
   # Cutoff down to 82Hz good for all strings, lost response for A=440Hz
   # Other filter response curves with more gradual fall off to preserve A=440Hz response ?
-  LOWPASS_FILTER_CUTOFF = 82
-  # LOWPASS_FILTER_Q = 0  # smooth down filter corner - test this with guitar
+  LOWPASS_FILTER_CUTOFF = 82 # TODO: lower cutoff to enable dropped-D detection ?
+  # LOWPASS_FILTER_Q = 0  # TODO: smooth down filter corner - test this with guitar
   GAIN = 1.0
 
-  methods :toggle_listening
+  def initialize
+    @vue = VueApp.new '#app'
+  end
 
-  data listening: false,
-       pitch:     0,
-       cents:     0,
-       note:      ""
-
-  def toggle_listening
-    if listening
-      @listening_loop.abort
-      @audio_context.close
-      self.listening = false
-      return
-    end
-    start_listening
+  def stop_listening
+    @listening_loop.abort
+    @audio_context.close
+    @vue.listening = false
   end
 
   def start_listening
@@ -98,7 +90,7 @@ class Tuner < Vue
     @gain.connect @filter 
     @filter.connect @analyser 
 
-    self.listening = true
+    @vue.listening = true
     @listening_loop = every(INTERVAL) do
       update_pitch
     end
@@ -132,13 +124,41 @@ class Tuner < Vue
     @analyser.getFloatTimeDomainData @float32array
     @buffer = Array( @float32array )
     detected_freq = Pitch::Detector.detect3 @buffer, rate: @audio_context.sampleRate
-    self.pitch = detected_freq
+    @vue.pitch = detected_freq
     unless detected_freq == 0
       detected_note = Pitch.note detected_freq
-      self.note  = detected_note.name
-      self.cents = detected_note.cents
+      @vue.note  = detected_note.name
+      @vue.cents = detected_note.cents
     end
   end
 
 end
+
+class VueApp < Vue
+
+  methods :toggle_listening
+
+  data listening: false,
+       pitch:     0,
+       cents:     0,
+       note:      ""
+
+  # TODO: inject tuner dependency instead of global $tuner
+  def toggle_listening
+    listening ? $tuner.stop_listening : $tuner.start_listening
+  end
+
+end
+
+# class VueComponentNote < VueComponent
+
+# end
+
+# class VueComponentFreqGraph < VueComponent
+
+# end
+
+# class VueComponentTimeGraph < VueComponent
+
+# end
 
