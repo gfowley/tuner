@@ -1,13 +1,9 @@
 require 'vue'
 
-class VueComponentNote < Vue
- 
-  name 'just-a-note'
-  
+class VueNote < Vue
+  name     'note'
   template '#note-template'
-
-  props  :note, :cents
-
+  props    :note, :cents
 end
 
 # class VueComponentFreqGraph < VueComponent

@@ -46,23 +46,48 @@ class Vue
     # TODO: also handle data as function
     return @vue_data if pairs.nil?
     @vue_data = pairs
-    pairs.each { |name,_| my_native_accessor name }
+    pairs.each { |name,_| native_data_accessor name }
   end
 
-  def self.my_native_accessor name
-    my_native_reader name
-    my_native_writer name
+  def self.native_data_accessor name
+    native_data_reader name
+    native_data_writer name
   end
 
-  def self.my_native_reader name
+  def self.native_data_reader name
     define_method name do
-      @native[name]
+      @native._data[name]
     end
   end
 
-  def self.my_native_writer name
+  def self.native_data_writer name
     define_method name+'=' do |arg|
-      @native[name] = arg
+      @native._data[name] = arg
+    end
+  end
+
+  def self.props *props
+    # TODO: also handle a hash of { name: validation, ... }
+    return @vue_props if props.empty?
+    @vue_props = props
+    props.each { |prop| native_prop_accessor prop }
+  end
+
+  def self.native_prop_accessor name
+    native_prop_reader name
+    native_prop_writer name
+  end
+
+  def self.native_prop_reader name
+    define_method name do
+      @native._props[name]
+    end
+  end
+
+  def self.native_prop_writer name
+    # Vue will warn about changing a prop...
+    define_method name+'=' do |arg|
+      @native.props[name] = arg
     end
   end
 
@@ -74,14 +99,6 @@ class Vue
   def self.computed *names
     return @vue_computed if names.empty?
     @vue_computed = names
-  end
-
-  def self.props *props
-    # TODO: also handle a hash of { name: validation, ... }
-    return @vue_props if props.empty?
-    @vue_props = props
-    # TODO: ruby native accessor for component props: JS... tuner.$children[0].$children[2]._props.note="Q"
-    props.each { |prop| my_native_accessor prop }
   end
 
   def self.name name=nil

@@ -1,7 +1,7 @@
 require 'browser/interval'
 require 'pitch'
 require 'vue_app'
-require 'vue_component_note'
+require 'vue_note'
 
 # TODO: app name
 # TODO: app icon
@@ -30,7 +30,7 @@ class Tuner
   GAIN = 1.0
 
   def initialize
-    VueComponentNote.component
+    VueNote.component
     @vue = VueApp.new '#app'
   end
 
