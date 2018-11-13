@@ -56,13 +56,13 @@ class Vue
 
   def self.native_data_reader name
     define_method name do
-      @native._data[name]
+      @native['$data'][name]
     end
   end
 
   def self.native_data_writer name
     define_method name+'=' do |arg|
-      @native._data[name] = arg
+      @native['$data'][name] = arg
     end
   end
 
@@ -80,14 +80,14 @@ class Vue
 
   def self.native_prop_reader name
     define_method name do
-      @native._props[name]
+      @native['$props'][name]
     end
   end
 
   def self.native_prop_writer name
     # Vue will warn about changing a prop...
     define_method name+'=' do |arg|
-      @native.props[name] = arg
+      @native['$props'][name] = arg
     end
   end
 
