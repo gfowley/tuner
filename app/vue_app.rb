@@ -9,7 +9,7 @@ class VueApp < Vue
        cents:     0,
        note:      ""
 
-  # TODO: inject tuner dependency instead of global $tuner
+  # TODO: inject tuner dependency instead of global $tuner (methods as procs ?)
   def toggle_listening
     listening ? $tuner.stop_listening : $tuner.start_listening
   end

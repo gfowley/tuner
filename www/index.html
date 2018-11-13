@@ -34,6 +34,23 @@
       TODO: detune lock-in when close enough ?
       -->
 
+      <script charset="utf-8" type="text/x-template" id="note-template">
+        <div>
+          <v-ons-row>
+            <v-ons-col width="100%" id="note-box">
+              <span id="note">{{ note == "" ? "--" : note }}</span>
+            </v-ons-col>
+          </v-ons-row>
+          <v-ons-row>
+            <v-ons-col width="100%">
+              <div id="cents">
+                <span>{{ Math.abs(cents) }} cents </span><span v-if="cents < 0">&#9837;</span><span v-if="cents > 0">&#9839;</span>
+              </div>
+            </v-ons-col>
+          </v-ons-row>
+        </div>
+      </script>
+
       <div id="app" class="invisible">
         <v-ons-page>
 
@@ -47,18 +64,10 @@
                   <span id="pitch">{{ Math.round(pitch) }}</span> Hz
                 </v-ons-col>
               </v-ons-row>
-              <v-ons-row>
-                <v-ons-col width="100%" id="note-box">
-                  <span id="note">{{ pitch == 0 ? "--" : note }}</span>
-                </v-ons-col>
-              </v-ons-row>
-              <v-ons-row>
-                <v-ons-col width="100%">
-                  <div id="cents">
-                    <span>{{ Math.abs(cents) }} cents </span><span v-if="cents < 0">&#9837;</span><span v-if="cents > 0">&#9839;</span>
-                  </div>
-                </v-ons-col>
-              </v-ons-row>
+              <just-a-note
+                v-bind:note="note"
+                v-bind:cents="cents" >
+              </just-a-note>
             </div>
             <v-ons-row>
               <v-ons-fab id="mic"
