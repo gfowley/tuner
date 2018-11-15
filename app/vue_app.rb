@@ -16,13 +16,12 @@ class VueApp < Vue
   end
 
   def test_data_method
-    puts "VueApp#test_data_method"
     {
       listening: false,
       pitch:     0,
       cents:     0,
       note:      ""
-    }.to_n
+    }
   end
 
 end

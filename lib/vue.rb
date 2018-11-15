@@ -57,15 +57,13 @@ class Vue
   end
 
   def self.data data_option=nil
-    # TODO: also handle data as function
     return @vue_data if data_option.nil?
     @vue_data = data_option
   end
 
   def resolve_data data_option
-    # TODO: wrap data method to convert returned ruby hash ot js object (.to_n)
-    # symbol or string is a method name, convert to proc and return
-    return method(data_option).to_proc if data_option.is_a?( Symbol ) || data_option.is_a?( String )
+    # symbol or string is a method name, wrap with proc returning native result
+    return Proc.new { method(data_option).call.to_n } if data_option.is_a?( Symbol ) || data_option.is_a?( String )
     data_option # otherwise return original object
   end
 
