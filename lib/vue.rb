@@ -1,6 +1,15 @@
 require 'native'
 
-# TODO: watchers and other method types
+# https://vuejs.org/v2/api/
+# https://vuejs.org/v2/api/#Options-Data
+# TODO: watch, propsData
+# https://vuejs.org/v2/api/#Options-DOM
+# https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
+# TODO: also accept a symbol instead of defining method
+# TODO: also wrap beforeCreate and created methods
+# https://vuejs.org/v2/api/#Options-Assets
+# https://vuejs.org/v2/api/#Options-Composition
+# https://vuejs.org/v2/api/#Options-Misc
 
 class Vue
 
@@ -15,7 +24,7 @@ class Vue
   def initialize_app element
     @config = {
       el:           element,
-      data:         self.class.data,
+      data:         resolve_data( self.class.data     ),
       methods:      methods_hash( self.class.methods  ),
       computed:     methods_hash( self.class.computed ),
       mounted:      method(:mounted).to_proc,
@@ -25,6 +34,11 @@ class Vue
     Native(`tuner = new Vue(#{@config.to_n})`)
   end
 
+  # TODO: js vue creates components as needed in templates
+  #       ruby component will only track one of those
+  #       first one ? last one ? 
+  #       will created hook and data method be called for each new js component ?
+  #       is it useful to make components + accessors available to dev ? js vue does not!
   def initialize_component
     @config = {
       template:     self.class.template,
@@ -42,26 +56,37 @@ class Vue
     new nil, true
   end
 
-  def self.data pairs=nil
+  def self.data data_option=nil
     # TODO: also handle data as function
-    return @vue_data if pairs.nil?
-    @vue_data = pairs
-    pairs.each { |name,_| native_data_accessor name }
+    return @vue_data if data_option.nil?
+    @vue_data = data_option
   end
 
-  def self.native_data_accessor name
+  def resolve_data data_option
+    # TODO: wrap data method to convert returned ruby hash ot js object (.to_n)
+    # symbol or string is a method name, convert to proc and return
+    return method(data_option).to_proc if data_option.is_a?( Symbol ) || data_option.is_a?( String )
+    data_option # otherwise return original object
+  end
+
+  def create_data_accessors
+    names = `Object.keys(#{@native['$data'].to_n})`
+    names.each { |name| native_data_accessor name }
+  end
+
+  def native_data_accessor name
     native_data_reader name
     native_data_writer name
   end
 
-  def self.native_data_reader name
-    define_method name do
+  def native_data_reader name
+    self.class.define_method name do
       @native['$data'][name]
     end
   end
 
-  def self.native_data_writer name
-    define_method name+'=' do |arg|
+  def native_data_writer name
+    self.class.define_method name+'=' do |arg|
       @native['$data'][name] = arg
     end
   end
@@ -70,23 +95,29 @@ class Vue
     # TODO: also handle a hash of { name: validation, ... }
     return @vue_props if props.empty?
     @vue_props = props
-    props.each { |prop| native_prop_accessor prop }
   end
 
-  def self.native_prop_accessor name
+  def create_prop_accessors
+    if ( props = @native['$props'] )
+      names = `Object.keys(#{props.to_n})`
+      names.each { |name| native_prop_accessor name }
+    end
+  end
+
+  def native_prop_accessor name
     native_prop_reader name
     native_prop_writer name
   end
 
-  def self.native_prop_reader name
-    define_method name do
+  def native_prop_reader name
+    self.class.define_method name do
       @native['$props'][name]
     end
   end
 
-  def self.native_prop_writer name
+  def native_prop_writer name
     # Vue will warn about changing a prop...
-    define_method name+'=' do |arg|
+    self.class.define_method name+'=' do |arg|
       @native['$props'][name] = arg
     end
   end
@@ -121,6 +152,8 @@ class Vue
 
   def created
     @native = Native(`#{@vue}`)
+    create_data_accessors
+    create_prop_accessors
   end
 
   def mounted

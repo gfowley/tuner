@@ -30,7 +30,7 @@ class Tuner
   GAIN = 1.0
 
   def initialize
-    VueNote.component
+    @vue_note = VueNote.component
     @vue = VueApp.new '#app'
   end
 
