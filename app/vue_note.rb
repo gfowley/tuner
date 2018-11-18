@@ -6,10 +6,3 @@ class VueNote < Vue
   props    :note, :cents
 end
 
-# class VueComponentFreqGraph < VueComponent
-# end
-
-# class VueComponentTimeGraph < VueComponent
-# end
-
-

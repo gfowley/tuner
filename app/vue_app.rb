@@ -20,7 +20,9 @@ class VueApp < Vue
       listening: false,
       pitch:     0,
       cents:     0,
-      note:      ""
+      note:      "",
+      rate:      0,
+      freq_data: [],
     }
   end
 

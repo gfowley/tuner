@@ -51,6 +51,25 @@
         </div>
       </script>
 
+
+
+<!-- https://stackoverflow.com/questions/45677045/vuejs-use-v-for-variable-as-attribute-value -->
+      <script charset="utf-8" type="text/x-template" id="freq-graph-template">
+        <v-ons-row> <v-ons-col width="100%" id="freq-graph-box">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256"> 
+            <rect fill="#303030" x=0 y=0 width=100% height=100% />
+
+            <line v-for="line in grid" v-bind:x1="line.x" y1=0 v-bind:x2="line.x" y2=256 stroke="#FF8080" />
+
+            <polyline
+              fill="none"
+              stroke="#FFFF80"
+              v-bind:points="points" />
+          </svg>
+          <span>{{grid}}</span>
+         </v-ons-col> </v-ons-row>
+      </script>
+
       <div id="app" class="invisible">
         <v-ons-page>
 
@@ -59,16 +78,25 @@
           </v-ons-toolbar>
 
             <div id="detector" v-bind:class="( !listening || pitch == 0 ) ? 'unknown' : 'known' ">
+
+              <freq-graph
+                v-bind:rate      = "rate"
+                v-bind:freq_data = "freq_data" >
+              </freq-graph>
+
               <v-ons-row>
                 <v-ons-col width="100%">
                   <span id="pitch">{{ Math.round(pitch) }}</span> Hz
                 </v-ons-col>
               </v-ons-row>
+
               <note
-                v-bind:note="note"
-                v-bind:cents="cents" >
+                v-bind:note  = "note"
+                v-bind:cents = "cents" >
               </note>
+
             </div>
+
             <v-ons-row>
               <v-ons-fab id="mic"
                 position="bottom center"
@@ -80,6 +108,7 @@
 
         </v-ons-page>
       </div>
+
 
     </body>
 </html>
