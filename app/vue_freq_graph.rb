@@ -5,13 +5,14 @@ class VueFreqGraph < Vue
   name     'freq-graph'
   template '#freq-graph-template'
 
-  props     :freq, :freq_data, :rate
+  props    :freq, :freq_data, :rate
 
   computed :points, :grid, :indicator
 
+  # FIX: graph points only cover half of window - what should these constants be ? ...
   GRAPH_FFT_WINDOW = 8 # fraction (divisor) of FFT to display
   GRAPH_WIDTH = 1024 # TODO: what should this be (calculate from FFT size ?)
-
+  
   def points
     fft_to_graph = freq_data.take( freq_data.count / GRAPH_FFT_WINDOW )
     fft_to_graph.each_with_index.map do |amp,i|

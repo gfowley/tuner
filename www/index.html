@@ -25,9 +25,7 @@
 
       <!--
       TODO: center mic icon in fab
-      TODO: smaller note font - A# is too wide to fit on phone screen
       TODO: larger font for pitch and cents
-      TODO: pitch top margin
       TODO: color note for detune red:yellow:green ? +blue ?
       TODO: breakpoints for detune note color
       TODO: detune visual scale indicator - needle ?
@@ -35,48 +33,56 @@
       -->
 
       <script charset="utf-8" type="text/x-template" id="note-template">
-        <div>
-          <v-ons-row>
-            <v-ons-col width="100%" id="note-box">
-              <span id="note">{{ note == "" ? "--" : note }}</span>
-            </v-ons-col>
-          </v-ons-row>
-          <v-ons-row>
-            <v-ons-col width="100%">
-              <div id="cents">
-                <span>{{ Math.abs(cents) }} cents </span><span v-if="cents < 0">&#9837;</span><span v-if="cents > 0">&#9839;</span>
-              </div>
-            </v-ons-col>
-          </v-ons-row>
-        </div>
+        <v-ons-card class="note-container">
+          <div>
+            <span id="note">{{ note == "" ? "--" : note }}</span>
+          </div>
+          <div>
+            <span id="cents">{{ Math.abs(cents) }} cents </span><span v-if="cents < 0">&#9837;</span><span v-if="cents > 0">&#9839;</span>
+          </div>
+        </v-ons-card>
       </script>
 
       <script charset="utf-8" type="text/x-template" id="freq-graph-template">
-        <v-ons-row> <v-ons-col width="100%" id="freq-graph-box">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256"> 
-            <rect fill="#303030" x=0 y=0 width=100% height=100% />
-            <line v-for="line in grid"
-              v-bind:x1="line.x" y1=0
-              v-bind:x2="line.x" y2=256
-              stroke="#FF8080" />
-            <text v-for="line in grid"
-              v-bind:x="line.x+2" y=253
-              stroke="#FF8080"
-              style="font-family:sans-serif;font-weight:100">{{line.freq}}</text>
-            <polyline
-              fill="none"
-              stroke="#FFFF80"
-              v-bind:points="points" />
-            <line v-if="rate != 0"
-              v-bind:x1="indicator.x" y1=0
-              v-bind:x2="indicator.x" y2=256
-              stroke="#40FF40" />
-            <text v-if="rate != 0"
-              v-bind:x="indicator.x+2" y=10
-              stroke="#40FF40"
-              style="font-family:sans-serif;font-weight:100">{{indicator.freq}}</text>
-          </svg>
-         </v-ons-col> </v-ons-row>
+        <v-ons-card>
+          <v-ons-row>
+            <v-ons-col width="100%">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 256"> 
+                <rect fill="#303030" x=0 y=0 width=100% height=100% />
+                <line v-for="line in grid"
+                  v-bind:x1="line.x" y1=0
+                  v-bind:x2="line.x" y2=256
+                  stroke="#FF8080" />
+                <text v-for="line in grid"
+                  v-bind:x="line.x+2" y=253
+                  stroke="#FF8080"
+                  style="font-family:sans-serif;font-weight:100;font-size:larger;">{{line.freq}}</text>
+                <polyline
+                  fill="none"
+                  stroke="#FFFF80"
+                  v-bind:points="points" />
+                <line v-if="rate != 0"
+                  v-bind:x1="indicator.x" y1=0
+                  v-bind:x2="indicator.x" y2=256
+                  stroke="#40FF40" />
+                <text v-if="rate != 0"
+                  v-bind:x="indicator.x+2" y=10
+                  stroke="#40FF40"
+                  style="font-family:sans-serif;font-weight:100;font-size:larger;">{{indicator.freq}}Hz</text>
+              </svg>
+            </v-ons-col>
+          </v-ons-row>
+        </v-ons-card>
+      </script>
+
+      <script charset="utf-8" type="text/x-template" id="frequency-template">
+        <v-ons-card class="freq-container">
+          <v-ons-row>
+            <v-ons-col width="100%">
+              <span id="freq">{{ freq.toFixed(2) }} Hz</span>
+            </v-ons-col>
+          </v-ons-row>
+        </v-ons-card>
       </script>
 
       <div id="app" class="invisible">
@@ -86,19 +92,17 @@
             <div class="center">Tuner</div>
           </v-ons-toolbar>
 
-            <div id="detector" v-bind:class="( !listening || pitch == 0 ) ? 'unknown' : 'known' ">
+            <div id="detector" v-bind:class="( !listening || freq == 0 ) ? 'unknown' : 'known' ">
 
               <freq-graph
-                v-bind:freq      = "pitch"
+                v-bind:freq      = "freq"
                 v-bind:rate      = "rate"
                 v-bind:freq_data = "freq_data" >
               </freq-graph>
 
-              <v-ons-row>
-                <v-ons-col width="100%">
-                  <span id="pitch">{{ Math.round(pitch) }}</span> Hz
-                </v-ons-col>
-              </v-ons-row>
+              <frequency
+                v-bind:freq = "freq" >
+              </frequency>
 
               <note
                 v-bind:note  = "note"

@@ -1,26 +1,26 @@
-#detector {
+.note-container {
   text-align: center;
 }
 
-#visualizer {
-  margin: 1rem;
-}
-
-#note-box {
-  height: 50vh; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.freq-container {
+  text-align: center;
 }
 
 #note {
-  font-size: 40vh;
+  font-size: 50vw;
+}
+
+#cents {
+  font-size: larger;
+}
+
+#freq {
+  font-size: larger;
 }
 
 #mic {
-  color:white;
+  color: white;
 }
-
 
 div.known {
   color: black;

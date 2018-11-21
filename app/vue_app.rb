@@ -18,9 +18,9 @@ class VueApp < Vue
   def test_data_method
     {
       listening: false,
-      pitch:     0,
-      cents:     0,
       note:      "",
+      cents:     0,
+      freq:      0,
       rate:      0,
       freq_data: [],
     }

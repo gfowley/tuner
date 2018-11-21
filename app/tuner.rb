@@ -2,6 +2,7 @@ require 'browser/interval'
 require 'pitch'
 require 'vue_app'
 require 'vue_note'
+require 'vue_frequency'
 require 'vue_freq_graph'
 
 # TODO: app name
@@ -32,7 +33,8 @@ class Tuner
 
   def initialize
     @vue_note = VueNote.component
-    @vue_freq = VueFreqGraph.component
+    @vue_freq = VueFrequency.component
+    @vue_freq_graph = VueFreqGraph.component
     @vue = VueApp.new '#app'
   end
 
@@ -129,7 +131,7 @@ class Tuner
     @analyser.getFloatTimeDomainData @float32array
     @buffer = Array( @float32array )
     detected_freq = Pitch::Detector.detect3 @buffer, rate: @audio_context.sampleRate
-    @vue.pitch = detected_freq
+    @vue.freq = detected_freq
     unless detected_freq == 0
       detected_note = Pitch.note detected_freq
       @vue.note  = detected_note.name
