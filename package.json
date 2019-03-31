@@ -10,16 +10,16 @@
     "author": "Iqeo",
     "license": "Apache-2.0",
     "dependencies": {
-        "cordova-android": "^7.1.1",
+        "cordova-android": "^7.1.4",
         "cordova-browser": "^5.0.4",
         "cordova-plugin-android-permissions": "^1.0.0",
         "cordova-plugin-whitelist": "^1.3.3",
-        "onsenui": "^2.10.6",
+        "onsenui": "^2.10.7",
         "vue": "^2.6.10",
         "vue-onsenui": "^2.6.2",
-        "webpack": "^4.17.2",
-        "webpack-cli": "^3.1.0",
-        "webpack-dev-server": "^3.1.8"
+        "webpack": "^4.29.6",
+        "webpack-cli": "^3.3.0",
+        "webpack-dev-server": "^3.1.11"
     },
     "cordova": {
         "plugins": {
