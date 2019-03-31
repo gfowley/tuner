@@ -1,42 +1,45 @@
+# Development
 
-# 
-
-Usage:
-
-# 1
-# build app from www to platforms/browser/www  
-# cordova build = cordova prepare + compile
-# cordova hook before_prepare runs scripts/before_prepare.js -> rake webpack:build to create bundle in www/js
-
+## Build
+Build app from directory ```www``` to ```platforms/browser/www```.  
+```
 cordova build
+```
+Cordova ```build``` runs ```cordova prepare``` and ```compile```.
+Cordova hook ```before_prepare``` (```scripts/before_prepare.js```) runs ```rake webpack:build``` to create bundle in directory ```www/js```.
 
-# 2a
-# option: run cordova browser app from platforms/browser/www
-
+## Run in browser (cordova)
+Run browser app via ```cordova``` from ```platforms/browser/www```.
+```
 cordova run browser
+```
 
-# 2b
-# option: develop app with webpack and directory platforms/browser/www
-# watches app, lib for changes to .rb files
-# browser auto reloads page
-# servers from www first, platforms/browser/www second
-# changes in www (html, css, js) available upon manual page reload
-
+## Run in browser (webpack-dev-server)
+Run browser app via ```webpack-dev-server``` from ```platforms/browser/www``` on ```http://localhost:8000```.
+```
 rake webpack:server
+```
+Auto reloads page on changes to ```.rb``` files in ```app```, ```lib```. 
+Serves from ```www``` first, ```platforms/browser/www``` second.
+Changes in ```www``` (html, css, js) require manual page reload.
 
-# Opal REPL available in lib
-# require 'repl' from .rb 
+# Opal stuff... 
 
+## Simple REPL
+Simple Opal REPL in ```lib/repl.rb```. Require from ```.rb```. 
+```
 require 'repl'
-
-# run repl directly
-
+```
+Run REPL directly.
+```
 REPL.run
-
-# open repl on exception
-
+```
+Open REPL on exception.
+```
 REPL.rescue do
-  raise 'ops!'
+  raise 'oops!'
 end
+```
 
-
+## Vue.js Wrapper
+Opal wrapper for Vue.js in ```lib/vue.rb``` and ```lib/vue_component.rb```.
