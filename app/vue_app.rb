@@ -17,12 +17,15 @@ class VueApp < Vue
 
   def test_data_method
     {
-      listening: false,
-      note:      "",
-      cents:     0,
-      freq:      0,
-      rate:      0,
-      freq_data: [],
+      listening:      false,
+      note:           "",
+      cents:          0,
+      freq:           0,
+      rate:           0,
+      freq_data_pre:  [],
+      freq_data_post: [],
+      count1:         3,
+      count2:         5
     }
   end
 

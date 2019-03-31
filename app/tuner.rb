@@ -1,9 +1,10 @@
 require 'browser/interval'
 require 'pitch'
 require 'vue_app'
-require 'vue_note'
-require 'vue_frequency'
-require 'vue_freq_graph'
+# require 'vue_note'
+# require 'vue_frequency'
+# require 'vue_freq_graph'
+require 'vue_thing'
 
 # TODO: app name
 # TODO: app icon
@@ -15,27 +16,33 @@ require 'vue_freq_graph'
 
 class Tuner
 
-  INTERVAL = 0.1
-  SAMPLES  = 4096
-  # SAMPLE_RATE = 44100 ?
+  # https://en.wikipedia.org/wiki/Piano_key_frequencies
 
+  LATENCY_HINT = 'interactive'
+  FFT_SIZE    = 4096 # 'Real' FFT result bins => 4096/2 = 2048
+  # Q: how many samples are needed (how much time) for @audio_context.sampleRate & FFT_SIZE ?
+  
   # Strong harmonics of low guitar strings are drowning out root note and causing detection of harmonic note instead of root note. 
   # Even harmonics are same note in higher octave - this is kind of okay for a simple tuner (right note, wrong octave)
   # Odd harmonics are different note in higher octave - this is bad! A=110Hz*3=330Hz=E  E=82Hz*3=246Hz=B
   # Attempting to amplify low notes and attenuate high notes...
   # Lowpass filter (biquad)...
   # Cutoff down to 110Hz good for A=110Hz string, still unstable for E=82Hz string, good for E=330Hz string, lost response for A=440Hz
-  # Cutoff down to 82Hz good for all strings, lost response for A=440Hz
+  # Cutoff down to 82Hz good for all strings, lost response for A=440Hz ?
   # Other filter response curves with more gradual fall off to preserve A=440Hz response ?
   LOWPASS_FILTER_CUTOFF = 82 # TODO: lower cutoff to enable dropped-D detection ?
   # LOWPASS_FILTER_Q = 0  # TODO: smooth down filter corner - test this with guitar
+
   GAIN = 1.0
+  INTERVAL = 0.1
 
   def initialize
-    @vue_note = VueNote.component
-    @vue_freq = VueFrequency.component
-    @vue_freq_graph = VueFreqGraph.component
-    @vue = VueApp.new '#app'
+    # @vue_note = VueNote.component
+    # @vue_freq = VueFrequency.component
+    # @vue_freq_graph = VueFreqGraph.component
+
+    @vue_thing = VueThing.component
+    @vue_app   = VueApp.new '#app'
   end
 
   def stop_listening
@@ -85,21 +92,24 @@ class Tuner
   end
 
   def got_stream stream
-    @audio_context = Native `new AudioContext()`
+    @audio_context = Native `new AudioContext({latencyHint: #{LATENCY_HINT}})`
 
-    @media_stream_source = create_stream_source stream
-    @gain = create_gain
-    @filter = create_filter
-    @analyser = create_analyser
+    @source        = create_stream_source stream
+    @gain          = create_gain
+    @filter        = create_filter
+    @analyser_post = create_analyser
+    @analyser_pre  = create_analyser
 
-    @media_stream_source.connect @gain
-    @gain.connect @filter 
-    @filter.connect @analyser 
+    @source.connect       @analyser_pre
+    @analyser_pre.connect @gain
+    @gain.connect         @filter
+    @filter.connect       @analyser_post
 
     @vue.listening = true
     @listening_loop = every(INTERVAL) do
       update_note
-      update_freq_graph
+      update_freq_graph_pre
+      update_freq_graph_post
     end
   end
 
@@ -122,13 +132,13 @@ class Tuner
  
   def create_analyser
     analyser = @audio_context.createAnalyser
-    analyser.fftSize = SAMPLES * 2
+    analyser.fftSize = FFT_SIZE
     analyser
   end
 
   def update_note
-    @float32array ||= `new Float32Array( #{SAMPLES} )` 
-    @analyser.getFloatTimeDomainData @float32array
+    @float32array ||= `new Float32Array( #{@analyser_post.frequencyBinCount} )` 
+    @analyser_post.getFloatTimeDomainData @float32array
     @buffer = Array( @float32array )
     detected_freq = Pitch::Detector.detect3 @buffer, rate: @audio_context.sampleRate
     @vue.freq = detected_freq
@@ -139,10 +149,17 @@ class Tuner
     end
   end
 
-  def update_freq_graph
-    uint8array ||= `new Uint8Array( #{@analyser.frequencyBinCount} )` 
-    @analyser.getByteFrequencyData uint8array
-    @vue.freq_data = Array( uint8array )
+  def update_freq_graph_pre
+    uint8array ||= `new Uint8Array( #{@analyser_pre.frequencyBinCount} )` 
+    @analyser_pre.getByteFrequencyData uint8array
+    @vue.freq_data_pre = Array( uint8array )
+    @vue.rate = @audio_context.sampleRate 
+  end
+
+  def update_freq_graph_post
+    uint8array ||= `new Uint8Array( #{@analyser_post.frequencyBinCount} )` 
+    @analyser_post.getByteFrequencyData uint8array
+    @vue.freq_data_post = Array( uint8array )
     @vue.rate = @audio_context.sampleRate 
   end
 
