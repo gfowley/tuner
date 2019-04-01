@@ -43,3 +43,17 @@ end
 
 ## Vue.js Wrapper
 Opal wrapper for Vue.js in ```lib/vue.rb``` and ```lib/vue_component.rb```.
+
+## Webpack
+Configuration file.
+```
+webpack.config.js
+```
+Opal app entrypoint is ```app/index.rb```.
+Configures webpack-dev-server to watch ```.rb``` files in ```app/``` and ```lib/``` directories.
+
+Loader file.
+```
+iqeo_opal_loader.js
+```
+Runs ```rake opal:webpack_build``` to build ```.rb``` files in ```app/``` and ```lib/``` directories.
