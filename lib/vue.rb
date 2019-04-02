@@ -1,23 +1,10 @@
 require 'native'
 
-# https://vuejs.org/v2/api/
-# https://vuejs.org/v2/api/#Options-Data
-# TODO: watch, propsData
-# https://vuejs.org/v2/api/#Options-DOM
-# https://vuejs.org/v2/api/#Options-Lifecycle-Hooks
-# TODO: also accept a symbol instead of defining method
-# TODO: also wrap beforeCreate and created methods
-# https://vuejs.org/v2/api/#Options-Assets
-# https://vuejs.org/v2/api/#Options-Composition
-# https://vuejs.org/v2/api/#Options-Misc
-
-# TODO: consider making data = ruby instance variables ? with public accessors ? 
-
 class Vue
 
   include Native
 
-  attr_accessor :native
+  attr_accessor :vue
   
   def initialize element = nil
    initialize_vue element
@@ -30,74 +17,19 @@ class Vue
       methods:      methods_hash( self.class.methods  ),
       computed:     methods_hash( self.class.computed ),
       mounted:      method(:mounted).to_proc,
-      beforeCreate: `function() { console.log("Vue#beforeCreate"); console.log(this); #{@vue} = this }`,
+      beforeCreate: `function() { #{@vue_this} = this }`,
       created:      method(:created).to_proc
     }
-    Native(`vue = new Vue(#{@config.to_n})`)
+    `new Vue(#{@config.to_n})`
+  end
+
+  def self.component component_class
+    component_class.register_component
   end
 
   def self.data data_option=nil
     return @vue_data if data_option.nil?
     @vue_data = data_option
-  end
-
-  def resolve_data data_option
-    # symbol or string is a method name, wrap with proc returning native result
-    return Proc.new { method(data_option).call.to_n } if data_option.is_a?( Symbol ) || data_option.is_a?( String )
-    data_option # otherwise return original object
-  end
-
-  def create_data_accessors
-    names = `Object.keys(#{@native['$data'].to_n})`
-    names.each { |name| native_data_accessor name }
-  end
-
-  def native_data_accessor name
-    native_data_reader name
-    native_data_writer name
-  end
-
-  def native_data_reader name
-    self.class.define_method name do
-      @native['$data'][name]
-    end
-  end
-
-  def native_data_writer name
-    self.class.define_method name+'=' do |arg|
-      @native['$data'][name] = arg
-    end
-  end
-
-  def self.props *props
-    # TODO: also handle a hash of { name: validation, ... }
-    return @vue_props if props.empty?
-    @vue_props = props
-  end
-
-  def create_prop_accessors
-    if ( props = @native['$props'] )
-      names = `Object.keys(#{props.to_n})`
-      names.each { |name| native_prop_accessor name }
-    end
-  end
-
-  def native_prop_accessor name
-    native_prop_reader name
-    native_prop_writer name
-  end
-
-  def native_prop_reader name
-    self.class.define_method name do
-      @native['$props'][name]
-    end
-  end
-
-  def native_prop_writer name
-    # Vue will warn about changing a prop...
-    self.class.define_method name+'=' do |arg|
-      @native['$props'][name] = arg
-    end
   end
 
   def self.methods *names
@@ -128,14 +60,42 @@ class Vue
     end
   end
 
+  def resolve_data data_option
+    # symbol or string is a method name, wrap with proc returning native result
+    return Proc.new { method(data_option).call.to_n } if data_option.is_a?( Symbol ) || data_option.is_a?( String )
+    data_option # otherwise return original object
+  end
+
+  def create_accessors_for object
+    if ( the_object = @vue[object] )
+      properties = `Object.keys(#{the_object.to_n})`
+      properties.each { |property| create_accessor object, property }
+    end
+  end
+
+  def create_accessor object, property
+    create_reader object, property
+    create_writer object, property
+  end
+
+  def create_reader object, property
+    self.class.define_method property do
+      @vue[object][property]
+    end
+  end
+
+  def create_writer object, property
+    self.class.define_method property+'=' do |arg|
+      @vue[object][property] = arg
+    end
+  end
+
   def created
-    @native = Native(`#{@vue}`)
-    create_data_accessors
-    create_prop_accessors
+    @vue = Native(`#{@vue_this}`)
+    create_accessors_for "$data"
   end
 
   def mounted
-    # may be provided by subclass
   end
 
 end

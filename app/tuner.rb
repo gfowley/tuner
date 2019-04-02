@@ -41,7 +41,7 @@ class Tuner
     # @vue_freq = VueFrequency.component
     # @vue_freq_graph = VueFreqGraph.component
 
-    @vue_thing = VueThing.component
+    Vue.component VueThing
     @vue_app   = VueApp.new '#app'
   end
 

@@ -86,7 +86,10 @@
       <!-- </script> -->
 
       <script charset="utf-8" type="text/x-template" id="thing-template">
+        <div>
         <h2>{{ whoami }} : {{ count }} x {{ other }} = {{ calc }}</h2>
+        <button v-on:click="other += 1">Inc. other</button>
+        </div>
       </script>
 
       <div id="app" class="invisible">
@@ -113,6 +116,14 @@
               <div>
                 <thing v-bind:count="count1" ></thing>
                 <thing v-bind:count="count2" ></thing>
+              </div>
+
+              <div>
+                <button v-on:click="count1 += 1">Inc. count1</button>
+              </div>
+
+              <div>
+                <button v-on:click="count2 += 1">Inc. count2</button>
               </div>
 
               <!-- <frequency -->
