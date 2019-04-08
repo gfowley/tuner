@@ -1,4 +1,3 @@
-require 'vue_component'
 
 class VueThing < VueComponent
   name     'thing'

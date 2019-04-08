@@ -1,6 +1,5 @@
-require 'vue'
 
-class VueFrequency < Vue
+class VueFrequency < VueComponent
   name     'frequency'
   template '#frequency-template'
   props    :freq

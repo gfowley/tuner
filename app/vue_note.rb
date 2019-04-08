@@ -1,6 +1,5 @@
-require 'vue'
 
-class VueNote < Vue
+class VueNote < VueComponent
   name     'note'
   template '#note-template'
   props    :note, :cents

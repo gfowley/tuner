@@ -1,10 +1,10 @@
 require 'browser/interval'
 require 'pitch'
 require 'vue_app'
-# require 'vue_note'
-# require 'vue_frequency'
-# require 'vue_freq_graph'
-require 'vue_thing'
+require 'vue_note'
+require 'vue_frequency'
+require 'vue_freq_graph'
+# require 'vue_thing'
 
 # TODO: app name
 # TODO: app icon
@@ -37,12 +37,11 @@ class Tuner
   INTERVAL = 0.1
 
   def initialize
-    # @vue_note = VueNote.component
-    # @vue_freq = VueFrequency.component
-    # @vue_freq_graph = VueFreqGraph.component
-
-    Vue.component VueThing
-    @vue_app   = VueApp.new '#app'
+    # Vue.component VueThing
+    @vue_note = Vue.component VueNote
+    @vue_freq = Vue.component VueFrequency
+    @vue_freq_graph = Vue.component VueFreqGraph
+    @vue   = VueApp.new '#app'
   end
 
   def stop_listening

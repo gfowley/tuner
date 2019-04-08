@@ -1,6 +1,5 @@
-require 'vue'
 
-class VueFreqGraph < Vue
+class VueFreqGraph < VueComponent
 
   name     'freq-graph'
   template '#freq-graph-template'
